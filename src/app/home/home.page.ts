@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, NgZone } from '@angular/core';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { NativeGeocoder, NativeGeocoderResult, NativeGeocoderOptions } from '@ionic-native/native-geocoder/ngx';
@@ -10,6 +10,12 @@ import { NativeGeocoder, NativeGeocoderResult, NativeGeocoderOptions } from '@io
 })
 
 export class HomePage {
+  private url: string = "https://api.sheetson.com/v2/sheets";
+  private headers: HttpHeaders = new HttpHeaders({
+    "X-Spreadsheet-Id": "1G4O0nqZ06p563UjjnA4p2obUfNAyPI93YK_3BVqO7js",
+    "Authorization": "Bearer " + "rmD-z-eJ3ZlDGKWhG1ZsigLgNCZnP6vC5LjlPkbZkvfD7NgeB3Q2SslMfUg"
+  });
+
   latitude: any = 0; //latitude
   longitude: any = 0; //longitude
   address: string;
@@ -28,8 +34,16 @@ export class HomePage {
   };
 
   public submitForm(body) {
-    const scriptURL = 'https://script.google.com/macros/s/AKfycby7KcSG4qN2AxEpFqHYjiKKmdLAb3rJTt5BgHSjwkzqXa3s6Cn0DMP-Rsb4xqW2GyXP/exec'
-    return this._http.post(scriptURL, body);
+    // const scriptURL = 'https://script.google.com/macros/s/AKfycby7KcSG4qN2AxEpFqHYjiKKmdLAb3rJTt5BgHSjwkzqXa3s6Cn0DMP-Rsb4xqW2GyXP/exec'
+    // return this._http.post(scriptURL, body);
+
+    body = {
+      timestamp: new Date(),
+      latitude: this.latitude,
+      longitude: this.longitude,
+      tracking: 'tracking',
+    };
+    return this._http.post(`https://api.sheetson.com/v2/sheets/vishwaAgro`, body, { headers: this.headers }).toPromise();
   }
   // use geolocation to get user's device coordinates
   getCurrentCoordinates() {
@@ -37,6 +51,7 @@ export class HomePage {
       console.log(resp)
       this.latitude = resp.coords.latitude;
       this.longitude = resp.coords.longitude;
+      this.submitForm({});
       this.getAddress(this.latitude, this.longitude);
     }).catch((error) => {
       console.log('Error getting location', error);
