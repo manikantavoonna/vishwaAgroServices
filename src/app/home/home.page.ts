@@ -11,6 +11,8 @@ import { NativeGeocoder, NativeGeocoderResult, NativeGeocoderOptions } from '@io
 
 export class HomePage {
   private url: string = "https://api.sheetson.com/v2/sheets";
+  public lastRecord: {};
+  public name: '';
   private headers: HttpHeaders = new HttpHeaders({
     "X-Spreadsheet-Id": "1G4O0nqZ06p563UjjnA4p2obUfNAyPI93YK_3BVqO7js",
     "Authorization": "Bearer " + "rmD-z-eJ3ZlDGKWhG1ZsigLgNCZnP6vC5LjlPkbZkvfD7NgeB3Q2SslMfUg"
@@ -42,8 +44,20 @@ export class HomePage {
       latitude: this.latitude,
       longitude: this.longitude,
       tracking: 'tracking',
+      name: this.name,
     };
     return this._http.post(`https://api.sheetson.com/v2/sheets/vishwaAgro`, body, { headers: this.headers }).toPromise();
+  }
+
+  public getData() {
+    return this._http.get(`https://api.sheetson.com/v2/sheets/vishwaAgro`, { headers: this.headers })
+  }
+
+  public fetchData() {
+    this.getData().subscribe((res: any) => {
+      console.log(res);
+      this.lastRecord = res.results[res.results.length-1];
+    })
   }
   // use geolocation to get user's device coordinates
   getCurrentCoordinates() {
@@ -52,6 +66,7 @@ export class HomePage {
       this.latitude = resp.coords.latitude;
       this.longitude = resp.coords.longitude;
       this.submitForm({});
+      this.fetchData();
       this.getAddress(this.latitude, this.longitude);
     }).catch((error) => {
       console.log('Error getting location', error);

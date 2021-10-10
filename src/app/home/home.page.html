@@ -12,7 +12,10 @@
     <ion-button (click)="getCurrentCoordinates()" expand="block">
       Get Location
     </ion-button>
-
+    <ion-item>
+      <ion-label>Fill your name</ion-label>
+      <ion-input [(ngModel)]="name"></ion-input>
+    </ion-item>
     <ion-list>
       <ion-list-header>
         <ion-label>Location Coordinates</ion-label>
@@ -36,5 +39,9 @@
         <ion-badge color="danger" slot="end">{{address}}</ion-badge>
       </ion-item>
     </ion-list>
+    Inserted:
+    <pre>
+{{lastRecord | json}}
+    </pre>
   </div>
 </ion-content>
