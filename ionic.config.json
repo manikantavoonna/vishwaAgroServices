@@ -1,8 +1,7 @@
 {
   "name": "VishwaAgroServices",
-  "app_id": "",
-  "type": "angular",
   "integrations": {
     "cordova": {}
-  }
+  },
+  "type": "angular"
 }
