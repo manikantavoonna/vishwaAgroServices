@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, NgZone } from '@angular/core';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { NativeGeocoder, NativeGeocoderResult, NativeGeocoderOptions } from '@ionic-native/native-geocoder/ngx';
+import {DatePipe} from '@angular/common';
 
 @Component({
   selector: 'app-home',
@@ -11,21 +12,32 @@ import { NativeGeocoder, NativeGeocoderResult, NativeGeocoderOptions } from '@io
 
 export class HomePage {
   private url: string = "https://api.sheetson.com/v2/sheets";
-  public lastRecord: {};
-  public name: '';
+  public lastRecord = {};
+  public startTime:any = '';
+  public fieldTime:any = '';
+  public name = '';
+  public mobile = '';
+  public cropType = '';
+  public landArea = '';
+  latitude: any = 0; //latitude
+  longitude: any = 0; //longitude
+  address ='';
+  pestQty = '';
+  feedback = '';
+  remarks = '';
+  public beforeSpray:any = '';
+  public afterSpray:any = '';
   private headers: HttpHeaders = new HttpHeaders({
     "X-Spreadsheet-Id": "1G4O0nqZ06p563UjjnA4p2obUfNAyPI93YK_3BVqO7js",
     "Authorization": "Bearer " + "rmD-z-eJ3ZlDGKWhG1ZsigLgNCZnP6vC5LjlPkbZkvfD7NgeB3Q2SslMfUg"
   });
 
-  latitude: any = 0; //latitude
-  longitude: any = 0; //longitude
-  address: string;
-
+ 
   constructor(
     private geolocation: Geolocation,
     private nativeGeocoder: NativeGeocoder,
-    private _http: HttpClient
+    private _http: HttpClient,
+    private datePipe: DatePipe
   ) { }
 
   // geolocation options
@@ -40,11 +52,20 @@ export class HomePage {
     // return this._http.post(scriptURL, body);
 
     body = {
-      timestamp: new Date(),
+      startTime: this.datePipe.transform(this.startTime, 'd-MMM-yy, h:mm:ss a'),
+      fieldTime: this.fieldTime,
+      name: this.name,
+      mobile: this.mobile,
+      cropType: this.cropType,
+      landArea: this.landArea,
       latitude: this.latitude,
       longitude: this.longitude,
-      tracking: 'tracking',
-      name: this.name,
+      address: this.address,
+      pestQty: this.pestQty,
+      beforeSpray: this.beforeSpray,
+      afterSpray: this.afterSpray,
+      feedback: this.feedback,
+      remarks: this.remarks,
     };
     return this._http.post(`https://api.sheetson.com/v2/sheets/vishwaAgro`, body, { headers: this.headers }).toPromise();
   }
@@ -56,7 +77,7 @@ export class HomePage {
   public fetchData() {
     this.getData().subscribe((res: any) => {
       console.log(res);
-      this.lastRecord = res.results[res.results.length-1];
+      this.lastRecord = res.results[res.results.length - 1];
     })
   }
   // use geolocation to get user's device coordinates
@@ -65,8 +86,8 @@ export class HomePage {
       console.log(resp)
       this.latitude = resp.coords.latitude;
       this.longitude = resp.coords.longitude;
-      this.submitForm({});
-      this.fetchData();
+      // this.submitForm({});
+      // this.fetchData();
       this.getAddress(this.latitude, this.longitude);
     }).catch((error) => {
       console.log('Error getting location', error);
@@ -86,7 +107,7 @@ export class HomePage {
         this.address = this.pretifyAddress(res[0]);
       })
       .catch((error: any) => {
-        alert('Error getting location' + JSON.stringify(error));
+        // alert('Error getting location' + JSON.stringify(error));
       });
   }
 
@@ -103,5 +124,9 @@ export class HomePage {
         data += obj[val] + ', ';
     }
     return address.slice(0, -2);
+  }
+
+  public getTime(key) {
+    this[key] = new Date();
   }
 }

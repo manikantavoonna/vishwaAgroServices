@@ -12,6 +12,7 @@ import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { NativeGeocoder } from '@ionic-native/native-geocoder/ngx';
 
 import { HttpClientModule } from '@angular/common/http';
+import { DatePipe } from '@angular/common';
 
 
 @NgModule({
@@ -19,7 +20,7 @@ import { HttpClientModule } from '@angular/common/http';
   entryComponents: [],
   imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule, HttpClientModule],
   providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }, Geolocation,
-    NativeGeocoder,
+    NativeGeocoder,DatePipe,
   {
     provide: RouteReuseStrategy,
     useClass: IonicRouteStrategy
