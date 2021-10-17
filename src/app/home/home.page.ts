@@ -2,7 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, NgZone } from '@angular/core';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { NativeGeocoder, NativeGeocoderResult, NativeGeocoderOptions } from '@ionic-native/native-geocoder/ngx';
-import {DatePipe} from '@angular/common';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-home',
@@ -13,26 +13,26 @@ import {DatePipe} from '@angular/common';
 export class HomePage {
   private url: string = "https://api.sheetson.com/v2/sheets";
   public lastRecord = {};
-  public startTime:any = '';
-  public fieldTime:any = '';
+  public startTime: any = '';
+  public fieldTime: any = '';
   public name = '';
   public mobile = '';
   public cropType = '';
   public landArea = '';
   latitude: any = 0; //latitude
   longitude: any = 0; //longitude
-  address ='';
+  address = '';
   pestQty = '';
   feedback = '';
   remarks = '';
-  public beforeSpray:any = '';
-  public afterSpray:any = '';
+  public beforeSpray: any = '';
+  public afterSpray: any = '';
   private headers: HttpHeaders = new HttpHeaders({
     "X-Spreadsheet-Id": "1G4O0nqZ06p563UjjnA4p2obUfNAyPI93YK_3BVqO7js",
     "Authorization": "Bearer " + "rmD-z-eJ3ZlDGKWhG1ZsigLgNCZnP6vC5LjlPkbZkvfD7NgeB3Q2SslMfUg"
   });
 
- 
+
   constructor(
     private geolocation: Geolocation,
     private nativeGeocoder: NativeGeocoder,
@@ -107,7 +107,7 @@ export class HomePage {
         this.address = this.pretifyAddress(res[0]);
       })
       .catch((error: any) => {
-        // alert('Error getting location' + JSON.stringify(error));
+        alert('Error getting location' + JSON.stringify(error));
       });
   }
 
@@ -128,5 +128,22 @@ export class HomePage {
 
   public getTime(key) {
     this[key] = new Date();
+  }
+
+  public reset() {
+    this.startTime = '';
+    this.fieldTime = '';
+    this.name = '';
+    this.mobile = '';
+    this.cropType = '';
+    this.landArea = '';
+    this.latitude = '';
+    this.longitude = '';
+    this.address = '';
+    this.pestQty = '';
+    this.beforeSpray = '';
+    this.afterSpray = '';
+    this.feedback = '';
+    this.remarks = '';
   }
 }

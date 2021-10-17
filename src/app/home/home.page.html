@@ -33,32 +33,39 @@
       <ion-label position="floating">Farmer land area</ion-label>
       <ion-input type="number" placeholder="Enter acres of farmers land" [(ngModel)]="landArea"></ion-input>
     </ion-item>
-    <ion-button (click)="getCurrentCoordinates()" expand="">
+    <ion-button *ngIf="!latitude" (click)="getCurrentCoordinates()" expand="">
       Get Location
     </ion-button>
-    <ion-list>
+    <ion-card  *ngIf="latitude">
+      <ion-card-header>
+        <ion-card-title>Location Coordinates</ion-card-title>
+        <ion-card-subtitle>Latitue : {{latitude}}</ion-card-subtitle>
+        <ion-card-subtitle>Longitude : {{longitude}}</ion-card-subtitle>
+      </ion-card-header>
+    </ion-card>
+    <!-- <ion-list *ngIf="latitude">
       <ion-list-header>
         <ion-label>Location Coordinates</ion-label>
       </ion-list-header>
-      <ion-item>
+      <ion-item *ngIf="latitude">
         <ion-label>
           Latitue
         </ion-label>
         <ion-badge color="danger" slot="end">{{latitude}}</ion-badge>
       </ion-item>
-      <ion-item>
+      <ion-item *ngIf="longitude">
         <ion-label>
           Longitude
         </ion-label>
         <ion-badge color="danger" slot="end">{{longitude}}</ion-badge>
       </ion-item>
-      <ion-item>
+      <ion-item *ngIf="address">
         <ion-label>
           Address
         </ion-label>
         <ion-badge color="danger" slot="end">{{address}}</ion-badge>
       </ion-item>
-    </ion-list>
+    </ion-list> -->
     <ion-item>
       <ion-label position="floating">Pesticide Quantity</ion-label>
       <ion-input placeholder="Enter quantity of pesticide"  type="number" [(ngModel)]="pestQty"></ion-input>
