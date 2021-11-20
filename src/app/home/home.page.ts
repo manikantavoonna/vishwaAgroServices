@@ -3,7 +3,8 @@ import { Component, NgZone } from '@angular/core';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { NativeGeocoder, NativeGeocoderResult, NativeGeocoderOptions } from '@ionic-native/native-geocoder/ngx';
 import { DatePipe } from '@angular/common';
-
+import { LoadingController } from '@ionic/angular';
+import { LocationAccuracy } from '@ionic-native/location-accuracy/ngx';
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
@@ -25,6 +26,7 @@ export class HomePage {
   pestQty = '';
   feedback = '';
   remarks = '';
+  submitted = false;
   public beforeSpray: any = '';
   public afterSpray: any = '';
   private headers: HttpHeaders = new HttpHeaders({
@@ -37,7 +39,9 @@ export class HomePage {
     private geolocation: Geolocation,
     private nativeGeocoder: NativeGeocoder,
     private _http: HttpClient,
-    private datePipe: DatePipe
+    private datePipe: DatePipe,
+    private _loadingCtrl: LoadingController,
+    private locationAccuracy: LocationAccuracy
   ) { }
 
   // geolocation options
@@ -48,8 +52,6 @@ export class HomePage {
   };
 
   public submitForm(body) {
-    // const scriptURL = 'https://script.google.com/macros/s/AKfycby7KcSG4qN2AxEpFqHYjiKKmdLAb3rJTt5BgHSjwkzqXa3s6Cn0DMP-Rsb4xqW2GyXP/exec'
-    // return this._http.post(scriptURL, body);
 
     body = {
       startTime: this.datePipe.transform(this.startTime, 'd-MMM-yy, h:mm:ss a'),
@@ -67,7 +69,24 @@ export class HomePage {
       feedback: this.feedback,
       remarks: this.remarks,
     };
-    return this._http.post(`https://api.sheetson.com/v2/sheets/vishwaAgro`, body, { headers: this.headers }).toPromise();
+
+    this._loadingCtrl.create({
+      message: 'Submitting data...please wait..'
+    }).then((response) => { 
+      response.present();
+      this.postData(body).subscribe((res) => {
+        console.log(res);
+        this.dismissLoader();
+        this.submitted = true;
+      },
+        (err) => {
+          console.log(err);
+        })
+    })
+  }
+
+  public postData(body) {
+    return this._http.post(`https://api.sheetson.com/v2/sheets/vishwaAgro`, body, { headers: this.headers });
   }
 
   public getData() {
@@ -80,18 +99,62 @@ export class HomePage {
       this.lastRecord = res.results[res.results.length - 1];
     })
   }
+
+  dismissLoader() {
+    this._loadingCtrl.dismiss().then((response) => {
+      console.log('Loader closed!', response);
+    }).catch((err) => {
+      console.log('Error occured : ', err);
+    });
+  }
+
+  getLatLong() {
+    this.getCurrentCoordinates();
+    this.locationAccuracy.canRequest().then((canRequest: boolean) => {
+      if(canRequest) {
+        // the accuracy option will be ignored by iOS
+        this.locationAccuracy.request(this.locationAccuracy.REQUEST_PRIORITY_HIGH_ACCURACY).then(
+          () => {
+            this.getCurrentCoordinates();
+            console.log('Request successful')
+          },
+          error => console.log('Error requesting location permissions', error)
+        );
+      } else {
+        this.getCurrentCoordinates();
+      }
+    });
+  }
   // use geolocation to get user's device coordinates
   getCurrentCoordinates() {
-    this.geolocation.getCurrentPosition().then((resp) => {
-      console.log(resp)
-      this.latitude = resp.coords.latitude;
-      this.longitude = resp.coords.longitude;
-      // this.submitForm({});
-      // this.fetchData();
-      this.getAddress(this.latitude, this.longitude);
-    }).catch((error) => {
-      console.log('Error getting location', error);
+    // this.simpleLoader('Fetching cordinates...');
+    this._loadingCtrl.create({
+      message: 'Fetching cordinates...'
+    }).then((response) => {
+      response.present();
+      this.geolocation.getCurrentPosition().then((resp) => {
+        console.log(resp);
+        this.dismissLoader();
+        this.latitude = resp.coords.latitude;
+        this.longitude = resp.coords.longitude;
+        // this.submitForm({});
+        // this.fetchData();
+        this.getAddr();
+      }).catch((error) => {
+        console.log('Error getting location', error);
+      });
     });
+  }
+
+  getAddr() {
+    this.getGeoFromAddr().subscribe((res:any) => {
+      const addr = res.results[0].locations[0];
+      this.address = `${addr.adminArea1}, ${addr.adminArea3}, ${addr.adminArea4}, ${addr.adminArea5}, ${addr.adminArea6}, ${addr.street}, ${addr.postalCode}`
+      console.log(res.results[0]);
+    })
+  }
+  getGeoFromAddr(){
+    return this._http.get(`http://open.mapquestapi.com/geocoding/v1/reverse?key=QTiuKR2rjSn4oZGuNWGoQQvg9Acha8XZ&location=${this.latitude},${this.longitude}8&includeRoadMetadata=true&includeNearestIntersection=true`);
   }
 
   // geocoder options
@@ -107,7 +170,7 @@ export class HomePage {
         this.address = this.pretifyAddress(res[0]);
       })
       .catch((error: any) => {
-        alert('Error getting location' + JSON.stringify(error));
+        console.log('Error getting location' + JSON.stringify(error));
       });
   }
 
@@ -145,5 +208,6 @@ export class HomePage {
     this.afterSpray = '';
     this.feedback = '';
     this.remarks = '';
+    this.submitted = false;
   }
 }
