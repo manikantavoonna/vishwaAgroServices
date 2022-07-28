@@ -1,0 +1,184 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title class="text-center">
+      <img class="logo" src="./assets/vas.jpeg" alt="Vishwa Agro Services">
+      <span>
+        Vishwa Agro Services
+      </span>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form #vasform="ngForm" autocomplete="off" *ngIf="!submitted">
+  <div class="ion-padding">
+    <ion-button [attr.disabled]="!!startTime" (click)="getTime('startTime')" expand="">
+      {{startTime ? (startTime | date: 'd-MMM-yy, h:mm:ss a') : 'Click here to start'}}
+    </ion-button>
+    <ion-button [attr.disabled]="!!fieldTime || !startTime" (click)="getTime('fieldTime')" expand="">
+      {{fieldTime ? (fieldTime | date: 'd-MMM-yy, h:mm:ss a') : 'Click here when reached field'}}
+    </ion-button>
+    <ion-item>
+      <ion-label position="floating">Name of the Farmer</ion-label>
+      <ion-input name="farmerName" #farmerNameCtrl="ngModel" required placeholder="Enter farmer name" [(ngModel)]="name"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Farmer mobile number</ion-label>
+      <ion-input name="mobile"  #mobileCtrl="ngModel"  required placeholder="Enter farmer mobile number"  type="number" [(ngModel)]="mobile"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Crop Type</ion-label>
+      <ion-input name="cropType"  #cropTypeCtrl="ngModel" required placeholder="Enter the crop name" [(ngModel)]="cropType"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Farmer land area</ion-label>
+      <ion-input name="landArea"  #landAreaCtrl="ngModel" required type="number" placeholder="Enter acres of farmers land" [(ngModel)]="landArea"></ion-input>
+    </ion-item>
+    <ion-button *ngIf="!latitude" (click)="getLatLong()" expand="">
+      Get Location
+    </ion-button>
+    <ion-card  *ngIf="latitude">
+      <ion-card-header>
+        <ion-card-title>Location Coordinates</ion-card-title>
+        <ion-card-subtitle><strong>Latitue :</strong> {{latitude}}</ion-card-subtitle>
+        <ion-card-subtitle><strong>Longitude :</strong> {{longitude}}</ion-card-subtitle>
+        <ion-card-subtitle><strong>Address :</strong> {{address}}</ion-card-subtitle>
+      </ion-card-header>
+    </ion-card>
+    <!-- <ion-list *ngIf="latitude">
+      <ion-list-header>
+        <ion-label>Location Coordinates</ion-label>
+      </ion-list-header>
+      <ion-item *ngIf="latitude">
+        <ion-label>
+          Latitue
+        </ion-label>
+        <ion-badge color="danger" slot="end">{{latitude}}</ion-badge>
+      </ion-item>
+      <ion-item *ngIf="longitude">
+        <ion-label>
+          Longitude
+        </ion-label>
+        <ion-badge color="danger" slot="end">{{longitude}}</ion-badge>
+      </ion-item>
+      <ion-item *ngIf="address">
+        <ion-label>
+          Address
+        </ion-label>
+        <ion-badge color="danger" slot="end">{{address}}</ion-badge>
+      </ion-item>
+    </ion-list> -->
+    <ion-item>
+      <ion-label position="floating">Pesticide Quantity</ion-label>
+      <ion-input name="pestQty"  #pestQtyCtrl="ngModel" required placeholder="Enter quantity of pesticide"  type="number" [(ngModel)]="pestQty"></ion-input>
+    </ion-item>
+    <ion-button [attr.disabled]="!!beforeSpray || !fieldTime" (click)="getTime('beforeSpray')" expand="">
+      {{beforeSpray ? (beforeSpray | date: 'd-MMM-yy, h:mm:ss a') : 'Click here before spraying'}}
+    </ion-button>
+    <ion-button [attr.disabled]="!!afterSpray || !beforeSpray" (click)="getTime('afterSpray')" expand="">
+      {{afterSpray ? (afterSpray | date: 'd-MMM-yy, h:mm:ss a') : 'Click here after spraying'}}
+    </ion-button>
+    <ion-item>
+      <ion-label position="floating">Feedback</ion-label>
+      <ion-textarea name="feedback"  #feedbackCtrl="ngModel" placeholder="Enter your feedback of farmer" [(ngModel)]="feedback"></ion-textarea>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Remarks</ion-label>
+      <ion-textarea name="remarks"  #remarksCtrl="ngModel" placeholder="Enter any remarks" [(ngModel)]="remarks"></ion-textarea>
+    </ion-item>
+    <ion-button [class.disabled]="vasform.invalid || !fieldTime || !afterSpray || !latitude"
+     [attr.disabled]="vasform.invalid  || !fieldTime || !afterSpray || !latitude" type="submit" (click)="submitForm()" expand="block">
+      Send Data
+    </ion-button>
+    <ion-button color="danger" (click)="reset()" expand="block">
+     Reset the form!
+    </ion-button>
+    <!-- <ion-list>
+      <ion-list-header>
+        <ion-label>Location Coordinates</ion-label>
+      </ion-list-header>
+      <ion-item>
+        <ion-label>
+          Latitue
+        </ion-label>
+        <ion-badge color="danger" slot="end">{{latitude}}</ion-badge>
+      </ion-item>
+      <ion-item>
+        <ion-label>
+          Longitude
+        </ion-label>
+        <ion-badge color="danger" slot="end">{{longitude}}</ion-badge>
+      </ion-item>
+      <ion-item>
+        <ion-label>
+          Address
+        </ion-label>
+        <ion-badge color="danger" slot="end">{{address}}</ion-badge>
+      </ion-item>
+    </ion-list>
+    Inserted:
+    <pre>
+{{lastRecord | json}}
+    </pre> -->
+  </div>
+  </form>
+
+  <!-- <ion-card *ngIf="submitted"> -->
+    <div  *ngIf="submitted">
+
+    <ion-list>
+      <ion-list-header>
+        Data submitted successfully..!
+      </ion-list-header>
+      <ion-item>
+        Start Time : {{ startTime | date: 'dd MMM yyyy HH:mm:ss' }}
+      </ion-item>  
+      <ion-item>
+        Reached Field At : {{ fieldTime | date: 'dd MMM yyyy HH:mm:ss' }}
+      </ion-item>  
+      <ion-item>
+        Name of Farmer : {{name}}
+      </ion-item>  
+      <ion-item>
+        Farmer Mobile Number : {{mobile}}
+      </ion-item>  
+      <ion-item>
+       Crop Type : {{cropType}}
+      </ion-item>  
+      <ion-item>
+       Location : 
+       <ion-card>
+        <ion-card-header>
+          <ion-card-title>Coordinates</ion-card-title>
+          <ion-card-subtitle>Latitue : {{latitude}}</ion-card-subtitle>
+          <ion-card-subtitle>Longitude : {{longitude}}</ion-card-subtitle>
+          <ion-card-subtitle>Address : {{address}}</ion-card-subtitle>
+        </ion-card-header>
+      </ion-card>
+      </ion-item>  
+      <ion-item>
+       Land Area : {{landArea}}
+      </ion-item>  
+      <ion-item>
+       Pesticide Quantity : {{pestQty}}
+      </ion-item>  
+      <ion-item>
+      Spray Started At : {{beforeSpray| date: 'dd MMM yyyy HH:mm:ss' }}
+      </ion-item>  
+      <ion-item>
+      Spray Completed At : {{afterSpray| date: 'dd MMM yyyy HH:mm:ss' }}
+      </ion-item>  
+      <ion-item>
+        Feedback : {{feedback}}
+      </ion-item>  
+      <ion-item>
+      Remarks : {{remarks}}
+      </ion-item>  
+    </ion-list>
+    <ion-button (click)="reset()" expand="block">
+      Submit new form
+     </ion-button>
+    </div>
+
+  <!-- </ion-card> -->
+</ion-content>

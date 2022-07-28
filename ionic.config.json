@@ -1,0 +1,7 @@
+{
+  "name": "VishwaAgroServices",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "angular"
+}
